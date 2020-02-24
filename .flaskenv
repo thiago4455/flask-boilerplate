@@ -1,1 +1,1 @@
-FLASK_APP=src/flask-boilerplate.py
+FLASK_APP=src
