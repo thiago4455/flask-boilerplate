@@ -7,14 +7,16 @@ min_connections = 1
 max_connections = 10
 
 pool = psycopg2.pool.SimpleConnectionPool(min_connections,max_connections,**DATABASE)
-print(pool)
 
-def connect(query):
+def connect(query,*parameters):
     try:
+        print(parameters)
         connection = pool.getconn()
-        print(connection)
         cursor = connection.cursor()
-        cursor.execute(query)
+        if(parameters):
+            cursor.execute(query,parameters)
+        else:
+            cursor.execute(query)
         rows = cursor.fetchall()
         cursor.close()
         pool.putconn(connection)
