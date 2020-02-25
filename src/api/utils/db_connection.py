@@ -1,20 +1,24 @@
-from .global_config import DATABASE
 import psycopg2
+from psycopg2 import pool
+
+from .global_config import DATABASE
+
+min_connections = 1
+max_connections = 10
+
+pool = psycopg2.pool.SimpleConnectionPool(min_connections,max_connections,**DATABASE)
+print(pool)
 
 def connect(query):
     try:
-        connection = psycopg2.connect(user = DATABASE['user'],
-                                    password = DATABASE['password'],
-                                    host = DATABASE['host'],
-                                    port = DATABASE['port'],
-                                    database = DATABASE['database'])
-
+        connection = pool.getconn()
+        print(connection)
         cursor = connection.cursor()
         cursor.execute(query)
-        record = cursor.fetchone()
+        rows = cursor.fetchall()
         cursor.close()
-        connection.close()
-        return record
+        pool.putconn(connection)
+        return rows
 
     except (Exception, psycopg2.Error) as error :
         if(connection):
